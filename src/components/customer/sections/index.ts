@@ -1,0 +1,8 @@
+export { CollaborationSection } from './CollaborationSection';
+export { ServicesProductsSection } from './ServicesProductsSection';
+export { BillingSection } from './BillingSection';
+export { PayrollSection } from './PayrollSection';
+export { AccountingSection } from './AccountingSection';
+export { ScheduleSection } from './ScheduleSection';
+export { StakeholdersSection } from './StakeholdersSection';
+export { LinksSection } from './LinksSection';
