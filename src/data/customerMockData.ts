@@ -203,6 +203,27 @@ export interface QuickLink {
   isInternalOnly: boolean;
 }
 
+export interface WorkInstruction {
+  id: string;
+  title: string;
+  description: string;
+  category: 'palkanlaskenta' | 'henkilöstöhallinto' | 'raportointi' | 'järjestelmät';
+  lastUpdated: Date;
+  documentUrl?: string;
+  steps?: string[];
+}
+
+export interface Guideline {
+  id: string;
+  title: string;
+  description: string;
+  category: 'palkkahallinto' | 'työaika' | 'lomat' | 'edut' | 'raportointi' | 'muu';
+  agreedDate: Date;
+  agreedWith: string;
+  details: string[];
+  notes?: string;
+}
+
 export interface TrustRepresentative {
   id: string;
   name: string;
@@ -274,8 +295,11 @@ export interface Customer {
   // Analytics
   serviceRequests: ServiceRequestData[];
 
-  // Work instructions
-  workInstructions: string[];
+  // Work instructions (internal only)
+  workInstructions: WorkInstruction[];
+
+  // Guidelines (visible to all)
+  guidelines: Guideline[];
 }
 
 // ============ MOCK DATA ============
@@ -758,11 +782,168 @@ export const customerData: Customer = {
   ],
 
   workInstructions: [
-    'Palkanlaskennan aikataulu ja prosessi',
-    'Uuden työntekijän perehdytys',
-    'Lomapäivien laskenta ja kirjaus',
-    'Matkalaskujen käsittely',
-    'Työsopimuksen muutokset',
+    {
+      id: '1',
+      title: 'Palkanlaskennan aikataulu ja prosessi',
+      description: 'Asiakkaan palkanlaskennan vaiheet ja aikataulut kuukausittain',
+      category: 'palkanlaskenta',
+      lastUpdated: new Date('2024-11-15'),
+      documentUrl: '#',
+      steps: [
+        'Aineiston vastaanotto Lataamosta viimeistään 7. päivä',
+        'Aineiston tarkistus ja esikäsittely 7.-8. päivä',
+        'Palkka-ajo ja tarkistus 9.-10. päivä',
+        'Hyväksyttäväksi asiakkaalle 11. päivä',
+        'Maksatus 15. päivä',
+      ],
+    },
+    {
+      id: '2',
+      title: 'Uuden työntekijän perehdytys järjestelmään',
+      description: 'Ohjeet uuden työntekijän lisäämiseksi Mepcoon ja käyttöoikeuksien hallintaan',
+      category: 'henkilöstöhallinto',
+      lastUpdated: new Date('2024-10-20'),
+      documentUrl: '#',
+      steps: [
+        'Tarkista työsopimuksen tiedot HR:ltä',
+        'Luo henkilötiedot Mepcoon',
+        'Aseta palkkaryhmä ja TES-tiedot',
+        'Lähetä tervetuloviestin tunnuksineen',
+        'Varmista käyttöoikeuksien aktivointi',
+      ],
+    },
+    {
+      id: '3',
+      title: 'Lomapäivien laskenta ja kirjaus',
+      description: 'Vuosilomien kertymisen ja käytön seuranta sekä kirjausohjeet',
+      category: 'palkanlaskenta',
+      lastUpdated: new Date('2024-09-10'),
+      documentUrl: '#',
+      steps: [
+        'Tarkista lomanmääräytymisvuoden kertymät',
+        'Huomioi lomarahan maksatuksen ajankohta',
+        'Kirjaa käytetyt lomapäivät ajoissa',
+        'Tarkista lomapalkkavaraukset kirjanpitoon',
+      ],
+    },
+    {
+      id: '4',
+      title: 'Vuosi-ilmoitusten laatiminen',
+      description: 'Verottajalle ja eläkeyhtiöille lähetettävien vuosi-ilmoitusten ohjeistus',
+      category: 'raportointi',
+      lastUpdated: new Date('2024-12-01'),
+      documentUrl: '#',
+      steps: [
+        'Tarkista vuoden aikana tehdyt korjaukset',
+        'Aja vuosi-ilmoitusraportit Mepcosta',
+        'Vertaa summia kuukausiraportteihin',
+        'Lähetä ilmoitukset viimeistään 31.1.',
+        'Arkistoi kopiot Tiedostamoon',
+      ],
+    },
+    {
+      id: '5',
+      title: 'Mepco-järjestelmän erikoisuudet',
+      description: 'Asiakaskohtaiset asetukset ja erityishuomiot Mepcossa',
+      category: 'järjestelmät',
+      lastUpdated: new Date('2024-08-25'),
+      documentUrl: '#',
+      steps: [
+        'Käytä aina asiakasnumeroa HEL-001 kirjautuessa',
+        'Tulospalkkiolaskenta tehdään manuaalisesti',
+        'Etätyökorvaus lisätään palkkalajilla 5050',
+        'Lomaraha maksetaan kesäkuussa (erikseen sovittu)',
+      ],
+    },
+  ],
+
+  guidelines: [
+    {
+      id: '1',
+      title: 'Ylityökorvausten käsittely',
+      description: 'Ylitöiden hyväksymis- ja korvausperiaatteet',
+      category: 'työaika',
+      agreedDate: new Date('2023-06-15'),
+      agreedWith: 'Minna Korhonen, HR-päällikkö',
+      details: [
+        'Ylityöt hyväksytään aina ennakkoon esihenkilön toimesta',
+        'Ylityökorvaukset maksetaan ensisijaisesti rahana, ei vapaana',
+        'Yli 20 tunnin kuukausittaiset ylityöt vaativat HR-päällikön hyväksynnän',
+        'Ylityöt kirjataan Mepcoon viimeistään seuraavan viikon maanantaina',
+      ],
+      notes: 'Poikkeus: Projekti Alpha -tiimillä erillinen sopimus ylitöistä',
+    },
+    {
+      id: '2',
+      title: 'Etätyökäytännöt ja korvaukset',
+      description: 'Etätyöhön liittyvät säännöt ja korvausperiaatteet',
+      category: 'työaika',
+      agreedDate: new Date('2023-01-10'),
+      agreedWith: 'Jukka Virtanen, Talousjohtaja',
+      details: [
+        'Etätyöpäiviä enintään 3 viikossa ilman erillistä sopimusta',
+        'Etätyökorvaus 5 €/päivä, maksetaan palkan yhteydessä',
+        'Etätyöpäivät kirjataan työajanseurantaan päivittäin',
+        'Etätyösopimus tehtävä kirjallisesti yli 2 päivän/viikko etätyöstä',
+      ],
+    },
+    {
+      id: '3',
+      title: 'Lomarahojen maksuajankohta',
+      description: 'Vuosiloman lomarahan maksatusperiaatteet',
+      category: 'lomat',
+      agreedDate: new Date('2022-11-20'),
+      agreedWith: 'Minna Korhonen, HR-päällikkö',
+      details: [
+        'Lomaraha maksetaan kertakorvauksena kesäkuun palkassa',
+        'Lomaraha lasketaan TES:n mukaisesti (50% lomapalkasta)',
+        'Työsuhteen päättyessä lomaraha maksetaan lopputilin yhteydessä',
+      ],
+      notes: 'Tarkistetaan vuosittain marraskuussa seuraavan vuoden käytäntö',
+    },
+    {
+      id: '4',
+      title: 'Kilometrikorvausten käsittely',
+      description: 'Oman auton käytön korvausperiaatteet työmatkoilla',
+      category: 'edut',
+      agreedDate: new Date('2024-01-05'),
+      agreedWith: 'Jukka Virtanen, Talousjohtaja',
+      details: [
+        'Kilometrikorvaus verottajan enimmäismäärän mukaan',
+        'Matkat kirjataan Procountor-matkalaskujärjestelmään',
+        'Matkalaskut hyväksyy esihenkilö viikon kuluessa',
+        'Korvaukset maksetaan kuukauden viimeisen palkanmaksun yhteydessä',
+      ],
+    },
+    {
+      id: '5',
+      title: 'Palkkatodistusten laatiminen',
+      description: 'Palkkatodistusten tilaus- ja toimitusprosessi',
+      category: 'palkkahallinto',
+      agreedDate: new Date('2023-03-01'),
+      agreedWith: 'Anna Laine, Palkanlaskija',
+      details: [
+        'Työntekijä tilaa palkkatodistuksen HR-portaalista tai sähköpostilla',
+        'Todistus toimitetaan 3 työpäivän kuluessa',
+        'Kiireellisissä tapauksissa (esim. lainahakemus) pyritään 1 päivään',
+        'Todistus toimitetaan ensisijaisesti sähköisesti, allekirjoitettuna',
+      ],
+    },
+    {
+      id: '6',
+      title: 'Sairauspoissaolojen ilmoittaminen',
+      description: 'Sairauslomien ilmoitus- ja todistuskäytännöt',
+      category: 'muu',
+      agreedDate: new Date('2023-02-15'),
+      agreedWith: 'Minna Korhonen, HR-päällikkö',
+      details: [
+        'Omailmoitus enintään 3 päivää kerrallaan, max 5 kertaa/vuosi',
+        'Yli 3 päivän poissaolosta vaaditaan lääkärintodistus',
+        'Ilmoitus tehtävä esihenkilölle samana päivänä ennen työajan alkua',
+        'Todistukset toimitetaan HR:lle viikon kuluessa',
+      ],
+      notes: 'Omailmoituskäytäntö voimassa toistaiseksi, seurataan väärinkäyttöä',
+    },
   ],
 };
 

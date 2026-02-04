@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -24,30 +24,10 @@ import { AccountingSection } from './sections/AccountingSection';
 import { ScheduleSection } from './sections/ScheduleSection';
 import { StakeholdersSection } from './sections/StakeholdersSection';
 import { LinksSection } from './sections/LinksSection';
+import { WorkInstructionsSection } from './sections/WorkInstructionsSection';
+import { GuidelinesSection } from './sections/GuidelinesSection';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`customer-tabpanel-${index}`}
-      aria-labelledby={`customer-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-const sections = [
+const allSections = [
   { label: 'Yhteistyö', id: 'yhteistyo', internal: false },
   { label: 'Palvelut', id: 'palvelut', internal: false },
   { label: 'Laskutus', id: 'laskutus', internal: false },
@@ -56,6 +36,8 @@ const sections = [
   { label: 'Aikataulu', id: 'aikataulu', internal: false },
   { label: 'Sidosryhmät', id: 'sidosryhmat', internal: false },
   { label: 'Linkit', id: 'linkit', internal: false },
+  { label: 'Työohjeet', id: 'tyoohjeet', internal: true },
+  { label: 'Linjaukset', id: 'linjaukset', internal: false },
 ];
 
 export const CustomerSite: React.FC = () => {
@@ -67,6 +49,18 @@ export const CustomerSite: React.FC = () => {
     ? integrataUserPermissions
     : customerUserPermissions;
 
+  // Filter sections based on user permissions
+  const sections = allSections.filter(
+    (section) => !section.internal || permissions.canViewInternalSections
+  );
+
+  // Reset tab value if current tab is no longer available after permission change
+  useEffect(() => {
+    if (tabValue >= sections.length) {
+      setTabValue(0);
+    }
+  }, [permissions.canViewInternalSections, sections.length, tabValue]);
+
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -75,14 +69,17 @@ export const CustomerSite: React.FC = () => {
     navigate(-1);
   };
 
-  const renderTabLabel = (section: typeof sections[0]) => (
+  const renderTabLabel = (section: typeof allSections[0]) => (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       {section.label}
-      {section.internal && !permissions.canViewInternalSections && (
-        <LockIcon sx={{ fontSize: 14 }} />
+      {section.internal && permissions.canViewInternalSections && (
+        <LockIcon sx={{ fontSize: 14, color: '#E53935' }} />
       )}
     </Box>
   );
+
+  // Get the current section id based on tab value
+  const currentSectionId = sections[tabValue]?.id;
 
   return (
     <Box
@@ -186,31 +183,39 @@ export const CustomerSite: React.FC = () => {
         </Tabs>
       </Box>
 
-      {/* Tab panels */}
-      <TabPanel value={tabValue} index={0}>
-        <CollaborationSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={1}>
-        <ServicesProductsSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={2}>
-        <BillingSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={3}>
-        <PayrollSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={4}>
-        <AccountingSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={5}>
-        <ScheduleSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={6}>
-        <StakeholdersSection customer={customerData} permissions={permissions} />
-      </TabPanel>
-      <TabPanel value={tabValue} index={7}>
-        <LinksSection customer={customerData} permissions={permissions} />
-      </TabPanel>
+      {/* Tab panels - render based on current section id */}
+      <Box sx={{ pt: 3 }}>
+        {currentSectionId === 'yhteistyo' && (
+          <CollaborationSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'palvelut' && (
+          <ServicesProductsSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'laskutus' && (
+          <BillingSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'palkanlaskenta' && (
+          <PayrollSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'kirjanpito' && (
+          <AccountingSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'aikataulu' && (
+          <ScheduleSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'sidosryhmat' && (
+          <StakeholdersSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'linkit' && (
+          <LinksSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'tyoohjeet' && (
+          <WorkInstructionsSection customer={customerData} permissions={permissions} />
+        )}
+        {currentSectionId === 'linjaukset' && (
+          <GuidelinesSection customer={customerData} permissions={permissions} />
+        )}
+      </Box>
     </Box>
   );
 };

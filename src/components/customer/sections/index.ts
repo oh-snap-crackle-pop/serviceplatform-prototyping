@@ -6,3 +6,5 @@ export { AccountingSection } from './AccountingSection';
 export { ScheduleSection } from './ScheduleSection';
 export { StakeholdersSection } from './StakeholdersSection';
 export { LinksSection } from './LinksSection';
+export { WorkInstructionsSection } from './WorkInstructionsSection';
+export { GuidelinesSection } from './GuidelinesSection';

@@ -12,9 +12,12 @@ import {
   Chip,
   Breadcrumbs,
   Link,
+  Avatar,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import { BenefitCard } from './BenefitCard';
 import { standardBenefits, categoryLabels } from '../../data/mockData';
 import type { BenefitCategory, BenefitStatus } from '../../types/benefits';
@@ -54,30 +57,103 @@ export const StandardBenefits: React.FC = () => {
         </Typography>
       </Breadcrumbs>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            Vakioedut
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Työnantajasi tarjoamat vakioedut
-          </Typography>
-        </Box>
-        <Chip
-          label={`${activeBenefitsCount} aktiivista etua`}
-          color="success"
-          variant="outlined"
+      {/* Hero Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #43A047 0%, #66BB6A 100%)',
+          borderRadius: 4,
+          p: 4,
+          mb: 4,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Decorative elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -30,
+            right: -30,
+            width: 150,
+            height: 150,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.1)',
+          }}
         />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -20,
+            right: 80,
+            width: 80,
+            height: 80,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.05)',
+          }}
+        />
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <Avatar
+              sx={{
+                width: 64,
+                height: 64,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <CardGiftcardIcon sx={{ fontSize: 32, color: '#fff' }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: '#fff' }}>
+                Vakioedut
+              </Typography>
+              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.85)' }}>
+                Työnantajasi tarjoamat vakioedut
+              </Typography>
+            </Box>
+          </Box>
+          <Chip
+            icon={<CheckCircleOutlineIcon />}
+            label={`${activeBenefitsCount} aktiivista etua`}
+            sx={{
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              py: 2.5,
+              px: 1,
+              '& .MuiChip-icon': { color: '#fff' },
+            }}
+          />
+        </Box>
       </Box>
 
-      {/* Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+      {/* Filters with enhanced styling */}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          mb: 4,
+          flexWrap: 'wrap',
+          p: 2,
+          backgroundColor: 'background.paper',
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
         <TextField
           placeholder="Hae etua..."
           size="small"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ minWidth: 250 }}
+          sx={{
+            minWidth: 250,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+            },
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -92,6 +168,7 @@ export const StandardBenefits: React.FC = () => {
             value={categoryFilter}
             label="Kategoria"
             onChange={(e) => setCategoryFilter(e.target.value as BenefitCategory | 'all')}
+            sx={{ borderRadius: 2 }}
           >
             <MenuItem value="all">Kaikki</MenuItem>
             {categories.map((cat) => (
@@ -107,6 +184,7 @@ export const StandardBenefits: React.FC = () => {
             value={statusFilter}
             label="Tila"
             onChange={(e) => setStatusFilter(e.target.value as BenefitStatus | 'all')}
+            sx={{ borderRadius: 2 }}
           >
             <MenuItem value="all">Kaikki</MenuItem>
             <MenuItem value="active">Aktiivinen</MenuItem>
