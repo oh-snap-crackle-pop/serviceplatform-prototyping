@@ -1,26 +1,24 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Typography,
   Grid,
   Card,
   CardContent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Chip,
-  Button,
-  Alert,
+  Divider,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import PieChartIcon from '@mui/icons-material/PieChart';
-import PercentIcon from '@mui/icons-material/Percent';
-import EditIcon from '@mui/icons-material/Edit';
+import PaymentIcon from '@mui/icons-material/Payment';
+import SyncIcon from '@mui/icons-material/Sync';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import type { Customer, UserPermissions } from '../../../data/customerMockData';
 
 interface AccountingSectionProps {
@@ -28,7 +26,6 @@ interface AccountingSectionProps {
   permissions: UserPermissions;
 }
 
-// Shared card styles for consistency
 const cardStyles = {
   backgroundColor: '#FFFFFF',
   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
@@ -43,24 +40,101 @@ const sectionHeaderStyles = {
   mb: 2.5,
 };
 
-export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer, permissions }) => {
-  const { accounting } = customer;
+// ── Rich text editor ──────────────────────────────────────────────────────────
 
-  const getCostTypeLabel = (type: string) => {
-    switch (type) {
-      case 'kustannuspaikka':
-        return 'Kustannuspaikka';
-      case 'projekti':
-        return 'Projekti';
-      default:
-        return 'Muu';
+const RichTextEditor: React.FC<{ initialValue: string }> = ({ initialValue }) => {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = initialValue;
     }
+  }, [initialValue]);
+
+  const execCmd = (command: string) => {
+    document.execCommand(command, false);
+    editorRef.current?.focus();
   };
 
   return (
     <Box>
-      <Grid container spacing={3}>
-        {/* Reporting Date & Fiscal Year */}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 0.5,
+          p: 0.5,
+          mb: 1,
+          border: '1px solid #e0e0e0',
+          borderRadius: 1,
+          backgroundColor: '#fafafa',
+        }}
+      >
+        <Tooltip title="Lihavointi (Ctrl+B)">
+          <IconButton size="small" onMouseDown={(e) => { e.preventDefault(); execCmd('bold'); }}>
+            <FormatBoldIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Kursivointi (Ctrl+I)">
+          <IconButton size="small" onMouseDown={(e) => { e.preventDefault(); execCmd('italic'); }}>
+            <FormatItalicIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Alleviivaus (Ctrl+U)">
+          <IconButton size="small" onMouseDown={(e) => { e.preventDefault(); execCmd('underline'); }}>
+            <FormatUnderlinedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+        <Tooltip title="Luettelo">
+          <IconButton size="small" onMouseDown={(e) => { e.preventDefault(); execCmd('insertUnorderedList'); }}>
+            <FormatListBulletedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Numeroitu luettelo">
+          <IconButton size="small" onMouseDown={(e) => { e.preventDefault(); execCmd('insertOrderedList'); }}>
+            <FormatListNumberedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <Box
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        sx={{
+          minHeight: 200,
+          border: `1px solid ${isFocused ? '#E53935' : '#e0e0e0'}`,
+          borderRadius: 1,
+          p: 1.5,
+          fontSize: '0.875rem',
+          lineHeight: 1.8,
+          color: '#2C2B35',
+          outline: 'none',
+          cursor: 'text',
+          transition: 'border-color 0.2s',
+          '& ul, & ol': { pl: 2.5, my: 0.5 },
+          '& p': { my: 0 },
+          '& strong': { fontWeight: 600 },
+        }}
+      />
+    </Box>
+  );
+};
+
+// ── Main section ──────────────────────────────────────────────────────────────
+
+export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer }) => {
+  const { accounting } = customer;
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+      {/* Top row: Aikataulu + Maksatus & verkkopalkat */}
+      <Grid container spacing={3} sx={{ alignItems: 'stretch' }}>
+
+        {/* Aikataulu */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={cardStyles}>
             <CardContent>
@@ -84,7 +158,7 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer, 
                 <Grid size={{ xs: 6 }}>
                   <Box sx={{ p: 2.5, backgroundColor: '#F8F8F8', borderRadius: 2, textAlign: 'center', border: '1px solid #EEEEEE' }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#2C2B35', lineHeight: 1.2 }}>
-                      {accounting.fiscalYearStart.replace('-', '.')} - {accounting.fiscalYearEnd.replace('-', '.')}
+                      {accounting.fiscalYearStart.replace('-', '.')} – {accounting.fiscalYearEnd.replace('-', '.')}
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#666', mt: 1 }}>
                       Tilikausi
@@ -96,140 +170,94 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer, 
           </Card>
         </Grid>
 
-        {/* Account Groups */}
+        {/* Maksatus & verkkopalkat */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={cardStyles}>
             <CardContent>
               <Box sx={sectionHeaderStyles}>
-                <AccountTreeIcon sx={{ color: '#E53935' }} />
+                <PaymentIcon sx={{ color: '#E53935' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
-                  Tiliöintiryhmät
+                  Maksatus & verkkopalkat
                 </Typography>
               </Box>
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: '#F5F5F5' }}>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Koodi</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Nimi</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {accounting.accountGroups.map((group) => (
-                      <TableRow key={group.id}>
-                        <TableCell sx={{ fontFamily: 'monospace', color: '#E53935' }}>
-                          {group.code}
-                        </TableCell>
-                        <TableCell sx={{ color: '#2C2B35' }}>{group.name}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
-        </Grid>
 
-        {/* Cost Allocations */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={cardStyles}>
-            <CardContent>
-              <Box sx={sectionHeaderStyles}>
-                <PieChartIcon sx={{ color: '#E53935' }} />
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
-                  Kustannuskohdisteet
+              {/* Maksatus */}
+              <Typography variant="caption" sx={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Maksatus
+              </Typography>
+              <Box sx={{ mt: 1, mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
+                  Palvelualustan maksatus
                 </Typography>
+                <Tooltip title="Haetaan automaattisesti Palvelualustalta">
+                  <Chip
+                    icon={<SyncIcon sx={{ fontSize: '0.8rem !important' }} />}
+                    label={accounting.platformPaymentEnabled ? 'Päällä' : 'Ei käytössä'}
+                    size="small"
+                    sx={{
+                      backgroundColor: accounting.platformPaymentEnabled ? '#E8F5E9' : '#F5F5F5',
+                      color: accounting.platformPaymentEnabled ? '#2E7D32' : '#757575',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                    }}
+                  />
+                </Tooltip>
               </Box>
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: '#F5F5F5' }}>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Koodi</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Nimi</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Tyyppi</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {accounting.costAllocations.map((allocation) => (
-                      <TableRow key={allocation.id}>
-                        <TableCell sx={{ fontFamily: 'monospace', color: '#E53935' }}>
-                          {allocation.code}
-                        </TableCell>
-                        <TableCell sx={{ color: '#2C2B35' }}>{allocation.name}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={getCostTypeLabel(allocation.type)}
-                            size="small"
-                            color={allocation.type === 'projekti' ? 'primary' : 'default'}
-                            sx={{
-                              fontSize: '0.7rem',
-                              ...(allocation.type !== 'projekti'
-                                ? { backgroundColor: '#E8E8E8', color: '#2C2B35' }
-                                : {}),
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
-        </Grid>
+              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
+                  Järjestelmä
+                </Typography>
+                <Chip
+                  label={accounting.paymentSystem === 'nomentia' ? 'Nomentia (Integrata)' : 'Oma järjestelmä'}
+                  size="small"
+                  sx={{
+                    backgroundColor: accounting.paymentSystem === 'nomentia' ? '#E3F2FD' : '#FFF3E0',
+                    color: accounting.paymentSystem === 'nomentia' ? '#1565C0' : '#E65100',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                  }}
+                />
+              </Box>
 
-        {/* Accrual Percentages */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={cardStyles}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PercentIcon sx={{ color: '#E53935' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
-                    Jaksotusprosentit
-                  </Typography>
-                </Box>
-                {permissions.canEditAccruals && (
-                  <Button startIcon={<EditIcon />} size="small" sx={{ borderRadius: 2 }}>
-                    Muokkaa
-                  </Button>
-                )}
+              <Divider sx={{ mb: 2 }} />
+
+              {/* Verkkopalkat */}
+              <Typography variant="caption" sx={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Verkkopalkat
+              </Typography>
+              <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
+                  Käytössä
+                </Typography>
+                <Chip
+                  label={accounting.onlineSalaries ? 'Kyllä' : 'Ei'}
+                  size="small"
+                  sx={{
+                    backgroundColor: accounting.onlineSalaries ? '#E8F5E9' : '#F5F5F5',
+                    color: accounting.onlineSalaries ? '#2E7D32' : '#757575',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                  }}
+                />
               </Box>
-              <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
-                Muutokset jaksotusprosentteihin tulee toimittaa kirjanpitoon.
-              </Alert>
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: '#F5F5F5' }}>
-                      <TableCell sx={{ fontWeight: 600, color: '#2C2B35' }}>Tyyppi</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 600, color: '#2C2B35' }}>Prosentti</TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600, color: '#2C2B35' }}>Muokattavissa</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {accounting.accrualPercentages.map((accrual) => (
-                      <TableRow key={accrual.id}>
-                        <TableCell sx={{ color: '#2C2B35' }}>{accrual.type}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600, color: '#E53935' }}>
-                          {accrual.percentage.toFixed(1)} %
-                        </TableCell>
-                        <TableCell align="center">
-                          {accrual.isCustomerEditable ? (
-                            <Chip label="Kyllä" size="small" color="success" sx={{ fontSize: '0.7rem' }} />
-                          ) : (
-                            <Chip label="Ei" size="small" color="default" sx={{ fontSize: '0.7rem', backgroundColor: '#E8E8E8', color: '#666' }} />
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {/* Kirjanpidon tiedot — rich text */}
+      <Card sx={{ ...cardStyles, height: 'auto' }}>
+        <CardContent>
+          <Box sx={sectionHeaderStyles}>
+            <EditNoteIcon sx={{ color: '#E53935' }} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
+              Kirjanpidon tiedot
+            </Typography>
+          </Box>
+          <RichTextEditor initialValue={accounting.accountingNotes} />
+        </CardContent>
+      </Card>
+
     </Box>
   );
 };

@@ -143,29 +143,10 @@ export interface AccountingInfo {
   reportingDate: number;
   fiscalYearStart: string;
   fiscalYearEnd: string;
-  accountGroups: AccountGroup[];
-  costAllocations: CostAllocation[];
-  accrualPercentages: AccrualSetting[];
-}
-
-export interface AccountGroup {
-  id: string;
-  code: string;
-  name: string;
-}
-
-export interface CostAllocation {
-  id: string;
-  code: string;
-  name: string;
-  type: 'kustannuspaikka' | 'projekti' | 'muu';
-}
-
-export interface AccrualSetting {
-  id: string;
-  type: string;
-  percentage: number;
-  isCustomerEditable: boolean;
+  accountingNotes: string; // HTML rich text
+  platformPaymentEnabled: boolean;
+  paymentSystem: 'nomentia' | 'own';
+  onlineSalaries: boolean;
 }
 
 export interface ScheduledTask {
@@ -640,23 +621,10 @@ export const customerData: Customer = {
     reportingDate: 5,
     fiscalYearStart: '01-01',
     fiscalYearEnd: '12-31',
-    accountGroups: [
-      { id: '1', code: '5000', name: 'Palkat ja palkkiot' },
-      { id: '2', code: '5100', name: 'Eläkekulut' },
-      { id: '3', code: '5200', name: 'Muut henkilösivukulut' },
-      { id: '4', code: '5300', name: 'Vapaaehtoiset henkilöstökulut' },
-    ],
-    costAllocations: [
-      { id: '1', code: '100', name: 'Hallinto', type: 'kustannuspaikka' },
-      { id: '2', code: '200', name: 'Myynti', type: 'kustannuspaikka' },
-      { id: '3', code: '300', name: 'Tuotanto', type: 'kustannuspaikka' },
-      { id: '4', code: 'P001', name: 'Kehitysprojekti Alpha', type: 'projekti' },
-    ],
-    accrualPercentages: [
-      { id: '1', type: 'Lomapalkkavaraus', percentage: 12.5, isCustomerEditable: true },
-      { id: '2', type: 'Lomarahavaraus', percentage: 6.0, isCustomerEditable: true },
-      { id: '3', type: 'Sosiaalikuluvaraus', percentage: 22.0, isCustomerEditable: false },
-    ],
+    accountingNotes: '<p><strong>Tiliöintiryhmät</strong></p><p>5000 Palkat ja palkkiot<br>5100 Eläkekulut<br>5200 Muut henkilösivukulut<br>5300 Vapaaehtoiset henkilöstökulut</p><p><br></p><p><strong>Kustannuskohdisteet</strong></p><p>100 Hallinto (kustannuspaikka)<br>200 Myynti (kustannuspaikka)<br>300 Tuotanto (kustannuspaikka)<br>P001 Kehitysprojekti Alpha (projekti)</p><p><br></p><p><strong>Jaksotusprosentit</strong></p><p>Lomapalkkavaraus 12,5 %<br>Lomarahavaraus 6,0 %<br>Sosiaalikuluvaraus 22,0 %</p>',
+    platformPaymentEnabled: true,
+    paymentSystem: 'nomentia' as const,
+    onlineSalaries: true,
   },
 
   // Section 6: Aikataulu
