@@ -146,7 +146,9 @@ export interface AccountingInfo {
   accountingNotes: string; // HTML rich text
   platformPaymentEnabled: boolean;
   paymentSystem: 'nomentia' | 'own';
+  payerIdentifier: string;
   onlineSalaries: boolean;
+  platformPayslipsEnabled: boolean;
 }
 
 export interface ScheduledTask {
@@ -624,7 +626,9 @@ export const customerData: Customer = {
     accountingNotes: '<p><strong>Tiliöintiryhmät</strong></p><p>5000 Palkat ja palkkiot<br>5100 Eläkekulut<br>5200 Muut henkilösivukulut<br>5300 Vapaaehtoiset henkilöstökulut</p><p><br></p><p><strong>Kustannuskohdisteet</strong></p><p>100 Hallinto (kustannuspaikka)<br>200 Myynti (kustannuspaikka)<br>300 Tuotanto (kustannuspaikka)<br>P001 Kehitysprojekti Alpha (projekti)</p><p><br></p><p><strong>Jaksotusprosentit</strong></p><p>Lomapalkkavaraus 12,5 %<br>Lomarahavaraus 6,0 %<br>Sosiaalikuluvaraus 22,0 %</p>',
     platformPaymentEnabled: true,
     paymentSystem: 'nomentia' as const,
+    payerIdentifier: 'FI12 3456 7890 1234 56',
     onlineSalaries: true,
+    platformPayslipsEnabled: true,
   },
 
   // Section 6: Aikataulu

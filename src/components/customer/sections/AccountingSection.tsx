@@ -170,14 +170,14 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer }
           </Card>
         </Grid>
 
-        {/* Maksatus & verkkopalkat */}
+        {/* Maksatus & palkkalaskelmat */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={cardStyles}>
             <CardContent>
               <Box sx={sectionHeaderStyles}>
                 <PaymentIcon sx={{ color: '#E53935' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
-                  Maksatus & verkkopalkat
+                  Maksatus & palkkalaskelmat
                 </Typography>
               </Box>
 
@@ -203,7 +203,7 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer }
                   />
                 </Tooltip>
               </Box>
-              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
                   Järjestelmä
                 </Typography>
@@ -218,16 +218,24 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer }
                   }}
                 />
               </Box>
+              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
+                  Maksajatunnus / pankkitili
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#2C2B35', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                  {accounting.payerIdentifier}
+                </Typography>
+              </Box>
 
               <Divider sx={{ mb: 2 }} />
 
-              {/* Verkkopalkat */}
+              {/* Palkkalaskelmat */}
               <Typography variant="caption" sx={{ fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Verkkopalkat
+                Palkkalaskelmat
               </Typography>
-              <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ mt: 1, mb: 0.75, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
-                  Käytössä
+                  Verkkopalkat käytössä
                 </Typography>
                 <Chip
                   label={accounting.onlineSalaries ? 'Kyllä' : 'Ei'}
@@ -239,6 +247,24 @@ export const AccountingSection: React.FC<AccountingSectionProps> = ({ customer }
                     fontSize: '0.75rem',
                   }}
                 />
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: '#2C2B35', minWidth: 170 }}>
+                  Palvelualusta palkkalaskelmat
+                </Typography>
+                <Tooltip title="Haetaan automaattisesti Palvelualustalta">
+                  <Chip
+                    icon={<SyncIcon sx={{ fontSize: '0.8rem !important' }} />}
+                    label={accounting.platformPayslipsEnabled ? 'Päällä' : 'Ei päällä'}
+                    size="small"
+                    sx={{
+                      backgroundColor: accounting.platformPayslipsEnabled ? '#E8F5E9' : '#F5F5F5',
+                      color: accounting.platformPayslipsEnabled ? '#2E7D32' : '#757575',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                    }}
+                  />
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
