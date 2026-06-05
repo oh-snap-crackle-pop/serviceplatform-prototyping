@@ -83,19 +83,23 @@ export interface BankAccount {
   isEditable: boolean;
 }
 
+export type ServiceDescriptionFileType = 'docx' | 'xlsx' | 'pdf' | 'pptx';
+
 export interface ServiceDescription {
   id: string;
   name: string;
-  validFrom: Date;
-  validTo?: Date;
-  documentUrl?: string;
+  fileType: ServiceDescriptionFileType;
+  modifiedDate: Date;
+  modifiedBy: string;
+  libraryPath: string;
+  documentUrl: string;
+  downloadUrl: string;
 }
 
 export interface BillingInfo {
   serviceDescriptions: ServiceDescription[];
-  generalInstructions: string;
-  agreedPrinciples: string;
-  internalInstructions?: string; // Internal only
+  generalInstructionsUrl: string;
+  customerSpecificInstructions: string;
 }
 
 export interface CollectiveAgreement {
@@ -500,25 +504,52 @@ export const customerData: Customer = {
     isEditable: true,
   },
 
-  // Section 3: Laskutus
+  // Section 3: Laskutus & sopimukset
   billing: {
     serviceDescriptions: [
       {
         id: '1',
-        name: 'Palkkahallinnon palvelusopimus',
-        validFrom: new Date('2023-01-01'),
+        name: 'Palkkahallinnon palvelusopimus 2024',
+        fileType: 'docx' as const,
+        modifiedDate: new Date('2024-01-15'),
+        modifiedBy: 'Kaisa Korhonen',
+        libraryPath: 'Sopimukset / Palvelukuvaukset',
         documentUrl: '#',
+        downloadUrl: '#',
       },
       {
         id: '2',
         name: 'HR-palveluiden lisäsopimus',
-        validFrom: new Date('2023-06-01'),
+        fileType: 'docx' as const,
+        modifiedDate: new Date('2023-06-12'),
+        modifiedBy: 'Mikko Mäkinen',
+        libraryPath: 'Sopimukset / Palvelukuvaukset',
         documentUrl: '#',
+        downloadUrl: '#',
+      },
+      {
+        id: '3',
+        name: 'Hinnoitteluliite 2024',
+        fileType: 'xlsx' as const,
+        modifiedDate: new Date('2024-02-01'),
+        modifiedBy: 'Kaisa Korhonen',
+        libraryPath: 'Sopimukset / Hinnoittelu',
+        documentUrl: '#',
+        downloadUrl: '#',
+      },
+      {
+        id: '4',
+        name: 'Palveluiden SLA-määrittelyt',
+        fileType: 'pdf' as const,
+        modifiedDate: new Date('2023-11-20'),
+        modifiedBy: 'Tiina Virtanen',
+        libraryPath: 'Sopimukset / Palvelutasot',
+        documentUrl: '#',
+        downloadUrl: '#',
       },
     ],
-    generalInstructions: 'Palvelut laskutetaan kuukausittain jälkikäteen. SaaS-maksut sisältävät peruspalvelut sekä päivitykset. Lisätyöt laskutetaan erikseen tuntiperusteisesti.',
-    agreedPrinciples: 'Kiinteä kuukausihinta perustuu henkilömäärään (127 hlö). Hinta tarkistetaan vuosittain indeksikorotuksen mukaan. Lisäpalvelut sovitaan erikseen.',
-    internalInstructions: 'Asiakas kuuluu avainasiakkaisiin. Lisätöistä sovittava aina etukäteen KK:n kanssa. Laskutusviite: HEL-2023-001.',
+    generalInstructionsUrl: '#',
+    customerSpecificInstructions: '<p>Kiinteä kuukausihinta perustuu henkilömäärään (127 hlö). Hinta tarkistetaan vuosittain indeksikorotuksen mukaan.</p><ul><li>Lisäpalvelut sovitaan erikseen</li><li>Laskutusviite: HEL-2023-001</li></ul>',
   },
 
   // Section 4: Palkanlaskenta

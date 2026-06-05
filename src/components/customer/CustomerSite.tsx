@@ -30,7 +30,7 @@ import { GuidelinesSection } from './sections/GuidelinesSection';
 const allSections = [
   { label: 'Yhteistyö', id: 'yhteistyo', internal: false },
   { label: 'Palvelut', id: 'palvelut', internal: false },
-  { label: 'Laskutus', id: 'laskutus', internal: false },
+  { label: 'Laskutus & sopimukset', id: 'laskutus', internal: false },
   { label: 'Palkanlaskenta', id: 'palkanlaskenta', internal: false },
   { label: 'Kirjanpito', id: 'kirjanpito', internal: false },
   { label: 'Aikataulu', id: 'aikataulu', internal: false },
