@@ -9,7 +9,6 @@ import {
   Divider,
   Tooltip,
   Grid,
-  Chip,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -44,28 +43,28 @@ const FILE_TYPE_CONFIG: Record<ServiceDescriptionFileType, {
   docx: {
     color: '#0078D4',
     label: 'DOCX',
-    icon: <ArticleIcon sx={{ fontSize: 40, color: '#fff' }} />,
+    icon: <ArticleIcon sx={{ fontSize: 18, color: '#fff' }} />,
   },
   xlsx: {
     color: '#217346',
     label: 'XLSX',
-    icon: <TableChartIcon sx={{ fontSize: 40, color: '#fff' }} />,
+    icon: <TableChartIcon sx={{ fontSize: 18, color: '#fff' }} />,
   },
   pdf: {
     color: '#B91C1C',
     label: 'PDF',
-    icon: <PictureAsPdfIcon sx={{ fontSize: 40, color: '#fff' }} />,
+    icon: <PictureAsPdfIcon sx={{ fontSize: 18, color: '#fff' }} />,
   },
   pptx: {
     color: '#C43E1C',
     label: 'PPTX',
-    icon: <SlideshowIcon sx={{ fontSize: 40, color: '#fff' }} />,
+    icon: <SlideshowIcon sx={{ fontSize: 18, color: '#fff' }} />,
   },
 };
 
-// ── SharePoint document card ──────────────────────────────────────────────────
+// ── Document list item (horizontal) ──────────────────────────────────────────
 
-const DocumentCard: React.FC<{ doc: ServiceDescription }> = ({ doc }) => {
+const DocumentListItem: React.FC<{ doc: ServiceDescription }> = ({ doc }) => {
   const [copied, setCopied] = useState(false);
   const cfg = FILE_TYPE_CONFIG[doc.fileType];
 
@@ -79,136 +78,97 @@ const DocumentCard: React.FC<{ doc: ServiceDescription }> = ({ doc }) => {
     date.toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric', year: 'numeric' });
 
   return (
-    <Card
+    <Box
       sx={{
-        backgroundColor: '#fff',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        borderRadius: 2,
-        border: '1px solid #e8e8e8',
-        height: '100%',
         display: 'flex',
-        flexDirection: 'column',
-        transition: 'box-shadow 0.15s, border-color 0.15s',
-        '&:hover': {
-          boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-          borderColor: '#c0c0c0',
-        },
+        alignItems: 'center',
+        gap: 1.5,
+        py: 1.5,
+        px: 0.5,
+        borderRadius: 1,
+        transition: 'background-color 0.15s',
+        '&:hover': { backgroundColor: '#f9f9f9' },
       }}
     >
-      {/* Thumbnail */}
+      {/* File type badge */}
       <Box
         sx={{
+          width: 36,
+          height: 36,
+          borderRadius: 1,
           backgroundColor: cfg.color,
-          height: 100,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          position: 'relative',
           flexShrink: 0,
         }}
       >
         {cfg.icon}
-        <Chip
-          label={cfg.label}
-          size="small"
-          sx={{
-            position: 'absolute',
-            bottom: 8,
-            right: 8,
-            backgroundColor: 'rgba(0,0,0,0.30)',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: '0.65rem',
-            height: 20,
-            letterSpacing: 0.5,
-          }}
-        />
       </Box>
 
-      {/* Metadata */}
-      <CardContent sx={{ flex: 1, pb: 0, pt: 1.5 }}>
+      {/* Name + metadata */}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography
           variant="body2"
           sx={{
             fontWeight: 600,
             color: '#2C2B35',
-            lineHeight: 1.35,
-            mb: 1,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
+            whiteSpace: 'nowrap',
             overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            lineHeight: 1.3,
+            mb: 0.25,
           }}
         >
           {doc.name}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-          <FolderIcon sx={{ fontSize: '0.8rem', color: '#888' }} />
-          <Typography variant="caption" sx={{ color: '#888', lineHeight: 1.2 }}>
-            {doc.libraryPath}
-          </Typography>
-        </Box>
-        <Typography variant="caption" sx={{ color: '#aaa' }}>
-          Muokattu {formatDate(doc.modifiedDate)} · {doc.modifiedBy}
-        </Typography>
-      </CardContent>
-
-      {/* Actions */}
-      <Box sx={{ px: 1.5, py: 1 }}>
-        <Divider sx={{ mb: 0.5 }} />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Tooltip title="Avaa SharePointissa">
-            <IconButton
-              size="small"
-              component={Link}
-              href={doc.documentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ color: '#0078D4' }}
-            >
-              <LaunchIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Lataa">
-            <IconButton
-              size="small"
-              component={Link}
-              href={doc.downloadUrl}
-              download
-              sx={{ color: '#555' }}
-            >
-              <DownloadIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={copied ? 'Linkki kopioitu!' : 'Kopioi linkki'}>
-            <IconButton
-              size="small"
-              onClick={handleCopy}
-              sx={{ color: copied ? '#217346' : '#555' }}
-            >
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Box sx={{ flex: 1 }} />
+          <FolderIcon sx={{ fontSize: '0.7rem', color: '#aaa' }} />
           <Typography
             variant="caption"
+            sx={{ color: '#aaa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+          >
+            {doc.libraryPath} · {formatDate(doc.modifiedDate)}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Actions */}
+      <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+        <Tooltip title="Avaa SharePointissa">
+          <IconButton
+            size="small"
             component={Link}
             href={doc.documentUrl}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{
-              color: '#0078D4',
-              fontWeight: 500,
-              fontSize: '0.72rem',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
-            }}
+            sx={{ color: '#0078D4' }}
           >
-            Avaa
-          </Typography>
-        </Box>
+            <LaunchIcon sx={{ fontSize: '1rem' }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Lataa">
+          <IconButton
+            size="small"
+            component={Link}
+            href={doc.downloadUrl}
+            download
+            sx={{ color: '#666' }}
+          >
+            <DownloadIcon sx={{ fontSize: '1rem' }} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={copied ? 'Linkki kopioitu!' : 'Kopioi linkki'}>
+          <IconButton
+            size="small"
+            onClick={handleCopy}
+            sx={{ color: copied ? '#217346' : '#666' }}
+          >
+            <ContentCopyIcon sx={{ fontSize: '1rem' }} />
+          </IconButton>
+        </Tooltip>
       </Box>
-    </Card>
+    </Box>
   );
 };
 
@@ -300,90 +260,97 @@ const cardStyles = {
   backgroundColor: '#FFFFFF',
   boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   borderRadius: 2,
+  height: '100%',
 };
 
 const sectionHeaderStyles = {
   display: 'flex',
   alignItems: 'center',
   gap: 1,
-  mb: 2.5,
+  mb: 2,
 };
 
 export const BillingSection: React.FC<BillingSectionProps> = ({ customer }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
 
-      {/* Palvelukuvaukset */}
-      <Box>
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 700, color: '#2C2B35', mb: 2 }}
-        >
-          Palvelukuvaukset
-        </Typography>
-        <Grid container spacing={2}>
-          {customer.billing.serviceDescriptions.map((doc) => (
-            <Grid key={doc.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-              <DocumentCard doc={doc} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      {/* Vasen palsta: Palvelukuvaukset */}
+      <Grid size={{ xs: 12, md: 5 }}>
+        <Card sx={cardStyles}>
+          <CardContent>
+            <Box sx={sectionHeaderStyles}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
+                Palvelukuvaukset
+              </Typography>
+            </Box>
+            {customer.billing.serviceDescriptions.map((doc, index) => (
+              <React.Fragment key={doc.id}>
+                <DocumentListItem doc={doc} />
+                {index < customer.billing.serviceDescriptions.length - 1 && (
+                  <Divider />
+                )}
+              </React.Fragment>
+            ))}
+          </CardContent>
+        </Card>
+      </Grid>
 
-      {/* Laskutusohjeet */}
-      <Card sx={cardStyles}>
-        <CardContent>
-          <Box sx={sectionHeaderStyles}>
-            <ReceiptIcon sx={{ color: '#E53935' }} />
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
-              Laskutusohjeet
-            </Typography>
-          </Box>
+      {/* Oikea palsta: Laskutusohjeet */}
+      <Grid size={{ xs: 12, md: 7 }}>
+        <Card sx={cardStyles}>
+          <CardContent>
+            <Box sx={sectionHeaderStyles}>
+              <ReceiptIcon sx={{ color: '#E53935' }} />
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#2C2B35' }}>
+                Laskutusohjeet
+              </Typography>
+            </Box>
 
-          {/* General instructions link */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              p: 1.5,
-              mb: 3,
-              backgroundColor: '#F5F5F5',
-              borderRadius: 1,
-              border: '1px solid #e0e0e0',
-            }}
-          >
-            <InfoIcon sx={{ color: '#E53935', flexShrink: 0 }} />
-            <Link
-              href={customer.billing.generalInstructionsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* General instructions link */}
+            <Box
               sx={{
-                color: '#2C2B35',
-                fontWeight: 500,
-                fontSize: '0.875rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 0.5,
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
+                gap: 1.5,
+                p: 1.5,
+                mb: 3,
+                backgroundColor: '#F5F5F5',
+                borderRadius: 1,
+                border: '1px solid #e0e0e0',
               }}
             >
-              Yleiset laskutusohjeet
-              <OpenInNewIcon sx={{ fontSize: '0.9rem' }} />
-            </Link>
-          </Box>
+              <InfoIcon sx={{ color: '#E53935', flexShrink: 0 }} />
+              <Link
+                href={customer.billing.generalInstructionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: '#2C2B35',
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
+                Yleiset laskutusohjeet
+                <OpenInNewIcon sx={{ fontSize: '0.9rem' }} />
+              </Link>
+            </Box>
 
-          <Divider sx={{ mb: 2.5 }} />
+            <Divider sx={{ mb: 2.5 }} />
 
-          {/* Customer-specific instructions */}
-          <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#2C2B35', mb: 1.5 }}>
-            Asiakaskohtaiset laskutusohjeet
-          </Typography>
-          <RichTextEditor initialValue={customer.billing.customerSpecificInstructions} />
-        </CardContent>
-      </Card>
+            {/* Customer-specific instructions */}
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#2C2B35', mb: 1.5 }}>
+              Asiakaskohtaiset laskutusohjeet
+            </Typography>
+            <RichTextEditor initialValue={customer.billing.customerSpecificInstructions} />
+          </CardContent>
+        </Card>
+      </Grid>
 
-    </Box>
+    </Grid>
   );
 };
